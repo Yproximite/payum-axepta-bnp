@@ -1,0 +1,14 @@
+.idea/
+vendor/
+
+# VM & Ansible
+.vagrant/
+ansible/roles/.downloads
+ansible/roles/manala.*
+
+# Binaries
+bin/*
+!bin/.gitkeep
+
+# PHP-CS-Fixer
+.php_cs.cache

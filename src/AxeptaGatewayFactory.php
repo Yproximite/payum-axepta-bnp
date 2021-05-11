@@ -33,7 +33,6 @@ class AxeptaGatewayFactory extends GatewayFactory
 
         if (false === ($config['payum.api'] ?? false)) {
             $config['payum.default_options'] = [
-                'sandbox'     => true,
                 'merchant_id' => null,
                 'hmac'        => null,
                 'crypt_key'   => null,

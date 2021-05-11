@@ -30,7 +30,7 @@ class NotifyAction extends BaseApiAwareAction implements ActionInterface, Gatewa
         $model = ArrayObject::ensureArrayObject($request->getModel());
 
         $this->gateway->execute($httpRequest = new GetHttpRequest());
-        $model->replace($this->api->replace($httpRequest->query));
+        $model->replace($this->api->replace($httpRequest->request));
 
         throw new HttpResponse('OK', 200);
     }

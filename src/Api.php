@@ -76,20 +76,26 @@ class Api
     public const FIELD_VADS_ECI             = 'ECI';
     public const FIELD_VADS_DDD             = 'DDD';
     public const FIELD_VADS_TYPE            = 'Type';
+
+    // @see https://docs.axepta.bnpparibas/display/DOCBNP/Payment+page section "How to customize the payment page?"
+    // Amount and Currency
     public const FIELD_VADS_CUSTOM_FIELD_1  = 'CustomField1';
+    // Order's number
     public const FIELD_VADS_CUSTOM_FIELD_2  = 'CustomField2';
+    // Merchant's logo
     public const FIELD_VADS_CUSTOM_FIELD_3  = 'CustomField3';
+    // Order's description
     public const FIELD_VADS_CUSTOM_FIELD_4  = 'CustomField4';
+    // Buyer's information
     public const FIELD_VADS_CUSTOM_FIELD_5  = 'CustomField5';
+    // Shipping information
     public const FIELD_VADS_CUSTOM_FIELD_6  = 'CustomField6';
+    // Delivery information
     public const FIELD_VADS_CUSTOM_FIELD_7  = 'CustomField7';
+    // Name of a new field added by the merchant
     public const FIELD_VADS_CUSTOM_FIELD_8  = 'CustomField8';
+    // Value of a new field added by the merchant
     public const FIELD_VADS_CUSTOM_FIELD_9  = 'CustomField9';
-    public const FIELD_VADS_CUSTOM_FIELD_10 = 'CustomField10';
-    public const FIELD_VADS_CUSTOM_FIELD_11 = 'CustomField11';
-    public const FIELD_VADS_CUSTOM_FIELD_12 = 'CustomField12';
-    public const FIELD_VADS_CUSTOM_FIELD_13 = 'CustomField13';
-    public const FIELD_VADS_CUSTOM_FIELD_14 = 'CustomField14';
 
     public const LANGUAGE_NL = 'nl';
     public const LANGUAGE_FR = 'fr';
@@ -149,6 +155,18 @@ class Api
         self::LANGUAGE_EN,
     ];
 
+    private const CUSTOM_FIELDS = [
+      self::FIELD_VADS_CUSTOM_FIELD_1,
+      self::FIELD_VADS_CUSTOM_FIELD_2,
+      self::FIELD_VADS_CUSTOM_FIELD_3,
+      self::FIELD_VADS_CUSTOM_FIELD_4,
+      self::FIELD_VADS_CUSTOM_FIELD_5,
+      self::FIELD_VADS_CUSTOM_FIELD_6,
+      self::FIELD_VADS_CUSTOM_FIELD_7,
+      self::FIELD_VADS_CUSTOM_FIELD_8,
+      self::FIELD_VADS_CUSTOM_FIELD_9,
+    ];
+
     protected $options = [];
     protected $client;
     protected $messageFactory;
@@ -188,18 +206,17 @@ class Api
         $this->parameters[static::FIELD_VADS_ORDER_DESC]  = $this->getOption(static::FIELD_VADS_ORDER_DESC, $details);
         $this->validate();
 
-        $mac  = $this->getShaSign();
         $data = $this->getBfishCrypt();
         $len  = $this->getOption(static::FIELD_LEN, $this->parameters);
 
-        $customFields = [
-            static::FIELD_VADS_CUSTOM_FIELD_1 => sprintf('%s %s', $this->parameters[static::FIELD_VADS_AMOUNT] / 100, $this->parameters[static::FIELD_VADS_CURRENCY]),
-            static::FIELD_VADS_CUSTOM_FIELD_2 => $this->parameters[static::FIELD_VADS_TRANS_ID],
-            static::FIELD_VADS_CUSTOM_FIELD_3 => 'https://www.isnar-img.com/wp-content/uploads/logo-FIDUCIAL.png',
-        ];
+        $customFields = [];
+        foreach (static::CUSTOM_FIELDS as $customField) {
+            if ('' !== $option = trim((string) $this->getOption($customField, $details))) {
+                $customFields[$customField] = $option;
+            }
+        }
 
         $url = sprintf('%s?MerchantID=%s&Len=%d&Data=%s&URLBack=%s&%s', static::ENDPOINT_PAYSSL, $this->parameters[static::FIELD_VADS_MERCHANT_ID], $len, $data, $this->parameters[static::FIELD_VADS_URL_BACK], http_build_query($customFields));
-        //        dd($details, $this->parameters, $mac, $data, $len, $url);
 
         throw new HttpPostRedirect($url, $details);
     }

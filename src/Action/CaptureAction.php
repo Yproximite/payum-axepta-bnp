@@ -31,21 +31,7 @@ class CaptureAction extends BaseApiAwareAction implements ActionInterface, Gatew
         RequestNotSupportedException::assertSupports($this, $request);
 
         $details = ArrayObject::ensureArrayObject($request->getModel());
-
-        if (null === $details[Api::FIELD_VADS_URL_SUCCESS] && $request->getToken() instanceof TokenInterface) {
-            $notifyToken = $this->tokenFactory->createNotifyToken(
-                $request->getToken()->getGatewayName(),
-                $request->getToken()->getDetails()
-            );
-
-            $details[Api::FIELD_VADS_URL_NOTIFY] = $notifyToken->getTargetUrl();
-        }
-
-        if (null === $details[Api::FIELD_VADS_URL_BACK] && $request->getToken() instanceof TokenInterface) {
-            $details[Api::FIELD_VADS_URL_SUCCESS] = $request->getToken()->getAfterUrl();
-            $details[Api::FIELD_VADS_URL_FAILURE] = $request->getToken()->getAfterUrl();
-            $details[Api::FIELD_VADS_URL_BACK]    = $request->getToken()->getAfterUrl();
-        }
+        $this->addEndpoints($request, $details);
 
         $this->api->doPayment((array) $details);
     }
@@ -58,5 +44,33 @@ class CaptureAction extends BaseApiAwareAction implements ActionInterface, Gatew
         return
             $request instanceof Capture &&
             $request->getModel() instanceof \ArrayAccess;
+    }
+
+    private function addEndpoints(Capture $request, ArrayObject $details): void
+    {
+        if (!$request->getToken() instanceof TokenInterface) {
+            return;
+        }
+
+        if (null === $details[Api::FIELD_VADS_URL_NOTIFY]) {
+            $notifyToken = $this->tokenFactory->createNotifyToken(
+                $request->getToken()->getGatewayName(),
+                $request->getToken()->getDetails()
+            );
+
+            $details[Api::FIELD_VADS_URL_NOTIFY] = $notifyToken->getTargetUrl();
+        }
+
+        if (null === $details[Api::FIELD_VADS_URL_SUCCESS]) {
+            $details[Api::FIELD_VADS_URL_SUCCESS] = $request->getToken()->getAfterUrl();
+        }
+
+        if (null === $details[Api::FIELD_VADS_URL_FAILURE]) {
+            $details[Api::FIELD_VADS_URL_FAILURE] = $request->getToken()->getAfterUrl();
+        }
+
+        if (null === $details[Api::FIELD_VADS_URL_BACK]) {
+            $details[Api::FIELD_VADS_URL_BACK] = $request->getToken()->getAfterUrl();
+        }
     }
 }

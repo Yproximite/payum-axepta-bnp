@@ -4,7 +4,7 @@
 app = {
   :name        => 'payum-axepta',
   :box         => 'manala/app-dev-debian',
-  :box_version => '~> 4.0.3',
+  :box_version => '~> 4.0.7',
   :box_memory  => 1024
 }
 

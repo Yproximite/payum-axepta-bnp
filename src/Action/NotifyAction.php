@@ -20,10 +20,8 @@ class NotifyAction extends BaseApiAwareAction implements ActionInterface, Gatewa
 
     /**
      * {@inheritdoc}
-     *
-     * @param Notify $request
      */
-    public function execute($request)
+    public function execute($request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
 

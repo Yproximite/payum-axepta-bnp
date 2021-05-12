@@ -20,6 +20,10 @@ class Api
     public const STATUS_AUTHORISED = 'AUTHORIZED';
     public const STATUS_FAILED     = 'FAILED';
 
+    public const OPTIONS_MERCHANT_ID = 'merchant_id';
+    public const OPTIONS_HMAC        = 'hmac';
+    public const OPTIONS_CRYPT_KEY   = 'crypt_key';
+
     public const FIELD_VADS_DEBUG       = 'Debug';
     public const FIELD_VADS_PAY_ID      = 'PayID';
     public const FIELD_VADS_TRANS_ID    = 'TransID';
@@ -55,47 +59,47 @@ class Api
     public const FIELD_VADS_BACKGROUND = 'Background';
     public const FIELD_VADS_CCSelect   = 'CCSelect';
 
-    public const FIELD_VADS_MID             = 'mid';
-    public const FIELD_VADS_REFNR           = 'refnr';
-    public const FIELD_VADS_XID             = 'XID';
-    public const FIELD_VADS_TRANS_STATUS    = 'Status';
-    public const FIELD_VADS_DESCRIPTION     = 'Description';
-    public const FIELD_VADS_CODE            = 'Code';
-    public const FIELD_VADS_PCNR            = 'PCNr';
-    public const FIELD_VADS_CCNR            = 'CCNr';
-    public const FIELD_VADS_CCCVC           = 'CCCVC';
-    public const FIELD_VADS_CC_BRAND        = 'CCBrand';
-    public const FIELD_VADS_CC_EXPIRY       = 'CCExpiry';
-    public const FIELD_VADS_TERM_URL        = 'TermURL';
-    public const FIELD_VADS_USER_AGENT      = 'UserAgent';
-    public const FIELD_VADS_HTTP_ACCEPT     = 'HTTPAccept';
-    public const FIELD_VADS_ABO_ID          = 'AboID';
-    public const FIELD_VADS_ACSXID          = 'ACSXID';
-    public const FIELD_VADS_MASKED_PAN      = 'MaskedPan';
-    public const FIELD_VADS_CAVV            = 'CAVV';
-    public const FIELD_VADS_ECI             = 'ECI';
-    public const FIELD_VADS_DDD             = 'DDD';
-    public const FIELD_VADS_TYPE            = 'Type';
+    public const FIELD_VADS_MID          = 'mid';
+    public const FIELD_VADS_REFNR        = 'refnr';
+    public const FIELD_VADS_XID          = 'XID';
+    public const FIELD_VADS_TRANS_STATUS = 'Status';
+    public const FIELD_VADS_DESCRIPTION  = 'Description';
+    public const FIELD_VADS_CODE         = 'Code';
+    public const FIELD_VADS_PCNR         = 'PCNr';
+    public const FIELD_VADS_CCNR         = 'CCNr';
+    public const FIELD_VADS_CCCVC        = 'CCCVC';
+    public const FIELD_VADS_CC_BRAND     = 'CCBrand';
+    public const FIELD_VADS_CC_EXPIRY    = 'CCExpiry';
+    public const FIELD_VADS_TERM_URL     = 'TermURL';
+    public const FIELD_VADS_USER_AGENT   = 'UserAgent';
+    public const FIELD_VADS_HTTP_ACCEPT  = 'HTTPAccept';
+    public const FIELD_VADS_ABO_ID       = 'AboID';
+    public const FIELD_VADS_ACSXID       = 'ACSXID';
+    public const FIELD_VADS_MASKED_PAN   = 'MaskedPan';
+    public const FIELD_VADS_CAVV         = 'CAVV';
+    public const FIELD_VADS_ECI          = 'ECI';
+    public const FIELD_VADS_DDD          = 'DDD';
+    public const FIELD_VADS_TYPE         = 'Type';
 
     // @see https://docs.axepta.bnpparibas/display/DOCBNP/Payment+page section "How to customize the payment page?"
     // Amount and Currency
-    public const FIELD_VADS_CUSTOM_FIELD_1  = 'CustomField1';
+    public const FIELD_VADS_CUSTOM_FIELD_1 = 'CustomField1';
     // Order's number
-    public const FIELD_VADS_CUSTOM_FIELD_2  = 'CustomField2';
+    public const FIELD_VADS_CUSTOM_FIELD_2 = 'CustomField2';
     // Merchant's logo
-    public const FIELD_VADS_CUSTOM_FIELD_3  = 'CustomField3';
+    public const FIELD_VADS_CUSTOM_FIELD_3 = 'CustomField3';
     // Order's description
-    public const FIELD_VADS_CUSTOM_FIELD_4  = 'CustomField4';
+    public const FIELD_VADS_CUSTOM_FIELD_4 = 'CustomField4';
     // Buyer's information
-    public const FIELD_VADS_CUSTOM_FIELD_5  = 'CustomField5';
+    public const FIELD_VADS_CUSTOM_FIELD_5 = 'CustomField5';
     // Shipping information
-    public const FIELD_VADS_CUSTOM_FIELD_6  = 'CustomField6';
+    public const FIELD_VADS_CUSTOM_FIELD_6 = 'CustomField6';
     // Delivery information
-    public const FIELD_VADS_CUSTOM_FIELD_7  = 'CustomField7';
+    public const FIELD_VADS_CUSTOM_FIELD_7 = 'CustomField7';
     // Name of a new field added by the merchant
-    public const FIELD_VADS_CUSTOM_FIELD_8  = 'CustomField8';
+    public const FIELD_VADS_CUSTOM_FIELD_8 = 'CustomField8';
     // Value of a new field added by the merchant
-    public const FIELD_VADS_CUSTOM_FIELD_9  = 'CustomField9';
+    public const FIELD_VADS_CUSTOM_FIELD_9 = 'CustomField9';
 
     public const LANGUAGE_NL = 'nl';
     public const LANGUAGE_FR = 'fr';
@@ -156,31 +160,30 @@ class Api
     ];
 
     private const CUSTOM_FIELDS = [
-      self::FIELD_VADS_CUSTOM_FIELD_1,
-      self::FIELD_VADS_CUSTOM_FIELD_2,
-      self::FIELD_VADS_CUSTOM_FIELD_3,
-      self::FIELD_VADS_CUSTOM_FIELD_4,
-      self::FIELD_VADS_CUSTOM_FIELD_5,
-      self::FIELD_VADS_CUSTOM_FIELD_6,
-      self::FIELD_VADS_CUSTOM_FIELD_7,
-      self::FIELD_VADS_CUSTOM_FIELD_8,
-      self::FIELD_VADS_CUSTOM_FIELD_9,
+        self::FIELD_VADS_CUSTOM_FIELD_1,
+        self::FIELD_VADS_CUSTOM_FIELD_2,
+        self::FIELD_VADS_CUSTOM_FIELD_3,
+        self::FIELD_VADS_CUSTOM_FIELD_4,
+        self::FIELD_VADS_CUSTOM_FIELD_5,
+        self::FIELD_VADS_CUSTOM_FIELD_6,
+        self::FIELD_VADS_CUSTOM_FIELD_7,
+        self::FIELD_VADS_CUSTOM_FIELD_8,
+        self::FIELD_VADS_CUSTOM_FIELD_9,
     ];
 
-    protected $options = [];
-    protected $client;
-    protected $messageFactory;
+    /** @var array<string, mixed> */
+    private array               $options = [];
+    private HttpClientInterface $client;
+    private MessageFactory      $messageFactory;
+    private string              $secretKey;
+    private string              $cryptKey;
+    /** @var array<string, mixed> */
+    private array   $parameters = [];
+    private ?string $dataString = null;
 
-    protected $secretKey;
-    protected $cryptKey;
-    protected $endpoint;
-    protected $parameters;
-    protected $dataString;
-
-    public const OPTIONS_MERCHANT_ID = 'merchant_id';
-    public const OPTIONS_HMAC        = 'hmac';
-    public const OPTIONS_CRYPT_KEY   = 'crypt_key';
-
+    /**
+     * @param array<string, mixed> $options
+     */
     public function __construct(array $options, HttpClientInterface $client, MessageFactory $messageFactory)
     {
         $this->options                                    = $options;
@@ -191,6 +194,9 @@ class Api
         $this->messageFactory                             = $messageFactory;
     }
 
+    /**
+     * @param array<string, mixed> $details
+     */
     public function doPayment(array $details): void
     {
         $this->parameters[static::FIELD_VADS_TRANS_ID]    = $this->getOption(static::FIELD_VADS_TRANS_ID, $details);
@@ -221,21 +227,29 @@ class Api
         throw new HttpPostRedirect($url, $details);
     }
 
+    /**
+     * @param array<string, mixed> $response
+     *
+     * @return array<string, mixed>
+     */
     public function replace(array $response): array
     {
         $this->setResponse($response);
 
-        parse_str($this->dataString, $result);
+        parse_str((string) $this->dataString, $result);
 
         return $result;
     }
 
+    /**
+     * @param array<string, mixed> $httpRequest
+     */
     public function setResponse(array $httpRequest): void
     {
         $this->parameters = $this->filterRequestParameters($httpRequest);
     }
 
-    public function validate()
+    public function validate(): void
     {
         foreach (static::REQUIRED_FIELDS as $field) {
             if (in_array($this->parameters[$field], [null, '', 0], true)) {
@@ -255,19 +269,22 @@ class Api
     {
         $this->validate();
 
-        return $this->BFishCompose(static::BLOWFISH_FIELDS);
+        return $this->bfishCompose(static::BLOWFISH_FIELDS);
     }
 
+    /**
+     * @param array<string, mixed> $parameters
+     */
     public function shaCompose(array $parameters): string
     {
         // compose SHA string
         $shaString = '';
         foreach ($parameters as $key) {
-            if (array_key_exists($key, $this->parameters) && !empty($this->parameters[$key])) {
+            if (array_key_exists($key, $this->parameters) && !in_array($this->parameters[$key], ['', null], true)) {
                 $value     = $this->parameters[$key];
                 $shaString .= $value;
             }
-            $shaString .= (array_search($key, $parameters) != (count($parameters) - 1)) ? '*' : '';
+            $shaString .= (array_search($key, $parameters, true) != (count($parameters) - 1)) ? '*' : '';
         }
 
         $this->parameters[static::SHASIGN_FIELD] = hash_hmac('sha256', $shaString, $this->secretKey);
@@ -275,12 +292,15 @@ class Api
         return $this->parameters[static::SHASIGN_FIELD];
     }
 
-    public function BfishCompose(array $parameters): string
+    /**
+     * @param array<string, mixed> $parameters
+     */
+    public function bfishCompose(array $parameters): string
     {
         $blowfishString = '';
 
         foreach ($parameters as $key) {
-            if (array_key_exists($key, $this->parameters) && !empty($this->parameters[$key])) {
+            if (array_key_exists($key, $this->parameters) && !in_array($this->parameters[$key], ['', null], true)) {
                 $value          = $this->parameters[$key];
                 $blowfishString .= $key.'='.$value.'&';
             }
@@ -293,24 +313,57 @@ class Api
         return $this->parameters[self::FIELD_DATA];
     }
 
+    protected function validateUri(string $uri): void
+    {
+        if (false === filter_var($uri, FILTER_VALIDATE_URL)) {
+            throw new \InvalidArgumentException('Uri is not valid');
+        }
+
+        if (strlen($uri) > 200) {
+            throw new \InvalidArgumentException('Uri is too long');
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $details
+     *
+     * @return mixed
+     */
+    protected function getOption(string $name, array $details = [])
+    {
+        if (array_key_exists($name, $details)) {
+            return $details[$name];
+        }
+
+        if (array_key_exists($name, $this->options)) {
+            return $this->options[$name];
+        }
+
+        return null;
+    }
+
+    /**
+     * @param array<string, mixed> $httpRequest
+     *
+     * @return array<string, mixed>
+     */
     private function filterRequestParameters(array $httpRequest): array
     {
         $parameters = $this->parameters;
         if (!array_key_exists(static::FIELD_DATA, $httpRequest) || '' == $httpRequest[static::FIELD_DATA]) {
-            // throw new InvalidArgumentException('Data parameter not present in parameters.');
-            $parameters[static::FIELD_VADS_DEBUG] = implode('&', $httpRequest);
+            $parameters[self::FIELD_VADS_DEBUG] = implode('&', $httpRequest);
             foreach ($httpRequest as $key => $value) {
-                $key              = ('mid' == $key) ? static::FIELD_VADS_MERCHANT_ID : $key;
+                $key              = ('mid' == $key) ? self::FIELD_VADS_MERCHANT_ID : $key;
                 $parameters[$key] = $value;
             }
         } else {
-            $parameters[static::FIELD_DATA]       = $httpRequest[static::FIELD_DATA];
-            $this->dataString                     = $this->decrypt(hex2bin($parameters[static::FIELD_DATA]), $this->cryptKey);
-            $parameters[static::FIELD_VADS_DEBUG] = $this->dataString;
+            $parameters[self::FIELD_DATA]         = $httpRequest[self::FIELD_DATA];
+            $this->dataString                     = $this->decrypt((string) hex2bin($parameters[self::FIELD_DATA]), $this->cryptKey);
+            $parameters[self::FIELD_VADS_DEBUG]   = $this->dataString;
             $dataParams                           = explode('&', $this->dataString);
             foreach ($dataParams as $dataParamString) {
                 $dataKeyValue     = explode('=', $dataParamString, 2);
-                $key              = ('mid' == $dataKeyValue[0]) ? static::FIELD_VADS_MERCHANT_ID : $dataKeyValue[0];
+                $key              = ('mid' == $dataKeyValue[0]) ? self::FIELD_VADS_MERCHANT_ID : $dataKeyValue[0];
                 $parameters[$key] = $dataKeyValue[1];
             }
         }
@@ -325,13 +378,13 @@ class Api
             $key = str_repeat($key, (int) ceil(16 / $l));
         }
 
-        if ($m = strlen($data) % 8) {
+        if (($m = strlen($data) % 8) > 0) {
             $data .= str_repeat("\x00", 8 - $m);
         }
 
         $val = openssl_encrypt($data, 'BF-ECB', $key, OPENSSL_RAW_DATA | OPENSSL_NO_PADDING);
 
-        return $val;
+        return (string) $val;
     }
 
     private function decrypt(string $data, string $key): string
@@ -343,32 +396,6 @@ class Api
 
         $val = openssl_decrypt($data, 'BF-ECB', $key, OPENSSL_RAW_DATA | OPENSSL_NO_PADDING);
 
-        return rtrim($val, "\0");
-    }
-
-    protected function validateUri(string $uri): void
-    {
-        if (!filter_var($uri, FILTER_VALIDATE_URL)) {
-            throw new \InvalidArgumentException('Uri is not valid');
-        }
-        if (strlen($uri) > 200) {
-            throw new \InvalidArgumentException('Uri is too long');
-        }
-    }
-
-    /**
-     * @return mixed
-     */
-    protected function getOption(string $name, array $details = [])
-    {
-        if (array_key_exists($name, $details)) {
-            return $details[$name];
-        }
-
-        if (array_key_exists($name, $this->options)) {
-            return $this->options[$name];
-        }
-
-        return null;
+        return rtrim((string) $val, "\0");
     }
 }

@@ -23,10 +23,8 @@ class CaptureAction extends BaseApiAwareAction implements ActionInterface, Gatew
 
     /**
      * {@inheritdoc}
-     *
-     * @param Capture $request
      */
-    public function execute($request)
+    public function execute($request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
@@ -46,6 +44,9 @@ class CaptureAction extends BaseApiAwareAction implements ActionInterface, Gatew
             $request->getModel() instanceof \ArrayAccess;
     }
 
+    /**
+     * @param ArrayObject<mixed> $details
+     */
     private function addEndpoints(Capture $request, ArrayObject $details): void
     {
         if (!$request->getToken() instanceof TokenInterface) {

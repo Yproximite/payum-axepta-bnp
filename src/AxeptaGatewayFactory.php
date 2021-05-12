@@ -16,6 +16,8 @@ class AxeptaGatewayFactory extends GatewayFactory
 {
     /**
      * {@inheritdoc}
+     *
+     * @param ArrayObject<mixed> $config
      */
     protected function populateConfig(ArrayObject $config): void
     {
@@ -25,7 +27,7 @@ class AxeptaGatewayFactory extends GatewayFactory
             'payum.action.capture'         => new CaptureAction(),
             'payum.action.convert_payment' => new ConvertPaymentAction(),
             'payum.action.notify'          => new NotifyAction(),
-            'payum.action.status'          => function (ArrayObject $config) {
+            'payum.action.status'          => function (ArrayObject $config): StatusAction {
                 return new StatusAction($config['payum.request_status_applier']);
             },
             'payum.request_status_applier' => new RequestStatusApplier(),
@@ -44,7 +46,7 @@ class AxeptaGatewayFactory extends GatewayFactory
                 'crypt_key',
             ];
 
-            $config['payum.api'] = function (ArrayObject $config) {
+            $config['payum.api'] = function (ArrayObject $config): Api {
                 $config->validateNotEmpty($config['payum.required_options']);
 
                 return new Api((array) $config, $config['payum.http_client'], $config['httplug.message_factory']);

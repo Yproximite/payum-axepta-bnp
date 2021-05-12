@@ -1,4 +1,4 @@
-dist: trusty
+dist: focal
 language: php
 
 notifications:
@@ -11,13 +11,12 @@ cache:
 
 jobs:
   include:
-    - php: 7.2
-      env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest"
-    - php: 7.3
-      env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest"
     - php: 7.4
       env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest"
     - php: 7.4
+    - php: 8.0
+      env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest"
+    - php: 8.0
 
 before_install:
   - phpenv config-rm xdebug.ini

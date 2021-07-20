@@ -10,6 +10,8 @@ use Payum\Core\Reply\HttpPostRedirect;
 
 class Api
 {
+    public const ENDPOINT_TYPE = 'endpoint_type';
+
     public const ENDPOINT_PAYSSL   = 'https://paymentpage.axepta.bnpparibas/payssl.aspx';
     public const ENDPOINT_DIRECT   = 'https://paymentpage.axepta.bnpparibas/direct.aspx';
     public const ENDPOINT_DIRECT3D = 'https://paymentpage.axepta.bnpparibas/direct3d.aspx';
@@ -202,6 +204,11 @@ class Api
      */
     public function doPayment(array $details): void
     {
+        dump($details);
+        if (static::ENDPOINT_DIRECT === $type = $this->getOption(static::ENDPOINT_TYPE, $details)) {
+            throw new HttpPostRedirect($this->getDirectPayment($details), $details);
+        }
+
         $this->parameters[static::FIELD_VADS_TRANS_ID]    = $this->getOption(static::FIELD_VADS_TRANS_ID, $details);
         $this->parameters[static::FIELD_VADS_AMOUNT]      = $this->getOption(static::FIELD_VADS_AMOUNT, $details);
         $this->parameters[static::FIELD_VADS_CURRENCY]    = $this->getOption(static::FIELD_VADS_CURRENCY, $details);

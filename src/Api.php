@@ -47,7 +47,10 @@ class Api
     public const FIELD_VADS_CUSTOM          = 'Custom';
     public const FIELD_VADS_EXPIRATION_TIME = 'expirationTime';
     public const FIELD_VADS_ACC_VERIFY      = 'AccVerify';
+    // I for initial and R for recurrent
     public const FIELD_VADS_RTF             = 'RTF';
+    // no if you want disable 3Dsecure for recurrent payment
+    public const FIELD_VADS_VBV             = 'Vbv';
     public const FIELD_VADS_CH_DESC         = 'ChDesc';
 
     public const FIELD_LEN  = 'Len';
@@ -210,6 +213,12 @@ class Api
         $this->parameters[static::FIELD_VADS_RESPONSE]    = $this->getOption(static::FIELD_VADS_RESPONSE, $details);
         $this->parameters[static::FIELD_VADS_LANGUAGE]    = $this->getOption(static::FIELD_VADS_LANGUAGE, $details);
         $this->parameters[static::FIELD_VADS_ORDER_DESC]  = $this->getOption(static::FIELD_VADS_ORDER_DESC, $details);
+
+        if (null !== $rtf = $this->getOption(static::FIELD_VADS_RTF, $details)) {
+            $this->parameters[static::FIELD_VADS_RTF] = $rtf;
+        }
+
+        $this->parameters[static::FIELD_VADS_ORDER_DESC]  = $this->getOption(static::FIELD_VADS_ORDER_DESC, $details);
         $this->validate();
 
         $data = $this->getBfishCrypt();
@@ -225,6 +234,24 @@ class Api
         $url = sprintf('%s?MerchantID=%s&Len=%d&Data=%s&URLBack=%s&%s', static::ENDPOINT_PAYSSL, $this->parameters[static::FIELD_VADS_MERCHANT_ID], $len, $data, $this->parameters[static::FIELD_VADS_URL_BACK], http_build_query($customFields));
 
         throw new HttpPostRedirect($url, $details);
+    }
+
+    public function getDirectPayment(array $details): string
+    {
+        $this->parameters[static::FIELD_VADS_TRANS_ID] = $this->getOption(static::FIELD_VADS_TRANS_ID, $details);
+        $this->parameters[static::FIELD_VADS_AMOUNT] = $this->getOption(static::FIELD_VADS_AMOUNT, $details);
+        $this->parameters[static::FIELD_VADS_CURRENCY] = $this->getOption(static::FIELD_VADS_CURRENCY, $details);
+
+        $this->parameters[static::FIELD_VADS_CCNR] = $this->getOption(static::FIELD_VADS_CCNR, $details);
+        $this->parameters[static::FIELD_VADS_RTF] = $this->getOption(static::FIELD_VADS_RTF, $details);
+        $this->parameters[static::FIELD_VADS_VBV] = 'no';
+        $this->parameters[static::FIELD_VADS_CC_BRAND] = $this->getOption(static::FIELD_VADS_CC_BRAND, $details);
+        $this->parameters[static::FIELD_VADS_CC_EXPIRY] = $this->getOption(static::FIELD_VADS_CC_EXPIRY, $details);
+
+        $data = $this->getBfishCrypt();
+        $len  = $this->getOption(static::FIELD_LEN, $this->parameters);
+
+        return sprintf('%s?MerchantID=%s&Len=%d&Data=%s', static::ENDPOINT_DIRECT, $this->parameters[static::FIELD_VADS_MERCHANT_ID], $len, $data);
     }
 
     /**

@@ -71,7 +71,9 @@ class Api
     public const FIELD_VADS_DESCRIPTION  = 'Description';
     public const FIELD_VADS_CODE         = 'Code';
     public const FIELD_VADS_PCNR         = 'PCNr';
+
     public const FIELD_VADS_CCNR         = 'CCNr';
+
     public const FIELD_VADS_CCCVC        = 'CCCVC';
     public const FIELD_VADS_CC_BRAND     = 'CCBrand';
     public const FIELD_VADS_CC_EXPIRY    = 'CCExpiry';
@@ -144,6 +146,13 @@ class Api
         self::FIELD_VADS_USER_DATA,
         self::FIELD_VADS_CAPTURE,
         self::FIELD_VADS_ORDER_DESC,
+
+        self::FIELD_VADS_PCNR,
+        self::FIELD_VADS_CCNR,
+        self::FIELD_VADS_CC_EXPIRY,
+        self::FIELD_VADS_CC_BRAND,
+        self::FIELD_VADS_VBV,
+        self::FIELD_VADS_RTF,
     ];
 
     private const REQUIRED_FIELDS = [
@@ -204,8 +213,7 @@ class Api
      */
     public function doPayment(array $details): void
     {
-        dump($details);
-        if (static::ENDPOINT_DIRECT === $type = $this->getOption(static::ENDPOINT_TYPE, $details)) {
+        if (static::ENDPOINT_DIRECT === $this->getOption(static::ENDPOINT_TYPE, $details)) {
             throw new HttpPostRedirect($this->getDirectPayment($details), $details);
         }
 
@@ -246,16 +254,17 @@ class Api
     public function getDirectPayment(array $details): string
     {
         $this->parameters[static::FIELD_VADS_TRANS_ID] = $this->getOption(static::FIELD_VADS_TRANS_ID, $details);
-        $this->parameters[static::FIELD_VADS_AMOUNT] = $this->getOption(static::FIELD_VADS_AMOUNT, $details);
+        $this->parameters[static::FIELD_VADS_AMOUNT]   = $this->getOption(static::FIELD_VADS_AMOUNT, $details);
         $this->parameters[static::FIELD_VADS_CURRENCY] = $this->getOption(static::FIELD_VADS_CURRENCY, $details);
 
-        $this->parameters[static::FIELD_VADS_CCNR] = $this->getOption(static::FIELD_VADS_CCNR, $details);
-        $this->parameters[static::FIELD_VADS_RTF] = $this->getOption(static::FIELD_VADS_RTF, $details);
-        $this->parameters[static::FIELD_VADS_VBV] = 'no';
-        $this->parameters[static::FIELD_VADS_CC_BRAND] = $this->getOption(static::FIELD_VADS_CC_BRAND, $details);
+        $this->parameters[static::FIELD_VADS_PCNR]      = $this->getOption(static::FIELD_VADS_PCNR, $details);
+        $this->parameters[static::FIELD_VADS_CCNR]      = $this->getOption(static::FIELD_VADS_PCNR, $details);
+        $this->parameters[static::FIELD_VADS_RTF]       = $this->getOption(static::FIELD_VADS_RTF, $details);
+        $this->parameters[static::FIELD_VADS_VBV]       = 'no';
+        $this->parameters[static::FIELD_VADS_CC_BRAND]  = $this->getOption(static::FIELD_VADS_CC_BRAND, $details);
         $this->parameters[static::FIELD_VADS_CC_EXPIRY] = $this->getOption(static::FIELD_VADS_CC_EXPIRY, $details);
 
-        $data = $this->getBfishCrypt();
+        $data = $this->getBfishCrypt(static::ENDPOINT_DIRECT);
         $len  = $this->getOption(static::FIELD_LEN, $this->parameters);
 
         return sprintf('%s?MerchantID=%s&Len=%d&Data=%s', static::ENDPOINT_DIRECT, $this->parameters[static::FIELD_VADS_MERCHANT_ID], $len, $data);
@@ -299,9 +308,12 @@ class Api
         return $this->shaCompose(static::REQUEST_HMAC_FIELDS);
     }
 
-    public function getBfishCrypt(): string
+    public function getBfishCrypt(?string $type = null): string
     {
-        $this->validate();
+        // TODO : better validation
+        if (static::ENDPOINT_DIRECT !== $type) {
+            $this->validate();
+        }
 
         return $this->bfishCompose(static::BLOWFISH_FIELDS);
     }
@@ -392,7 +404,7 @@ class Api
             }
         } else {
             $parameters[self::FIELD_DATA]         = $httpRequest[self::FIELD_DATA];
-            $this->dataString                     = $this->decrypt((string) hex2bin($parameters[self::FIELD_DATA]), $this->cryptKey);
+            $this->dataString                     = static::decrypt((string) hex2bin($parameters[self::FIELD_DATA]), $this->cryptKey);
             $parameters[self::FIELD_VADS_DEBUG]   = $this->dataString;
             $dataParams                           = explode('&', $this->dataString);
             foreach ($dataParams as $dataParamString) {
@@ -421,7 +433,7 @@ class Api
         return (string) $val;
     }
 
-    private function decrypt(string $data, string $key): string
+    public static function decrypt(string $data, string $key): string
     {
         $l = strlen($key);
         if ($l < 16) {

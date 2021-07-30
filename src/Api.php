@@ -10,6 +10,8 @@ use Payum\Core\Reply\HttpPostRedirect;
 
 class Api
 {
+    public const ENDPOINT_TYPE = 'endpoint_type';
+
     public const ENDPOINT_PAYSSL   = 'https://paymentpage.axepta.bnpparibas/payssl.aspx';
     public const ENDPOINT_DIRECT   = 'https://paymentpage.axepta.bnpparibas/direct.aspx';
     public const ENDPOINT_DIRECT3D = 'https://paymentpage.axepta.bnpparibas/direct3d.aspx';
@@ -47,7 +49,10 @@ class Api
     public const FIELD_VADS_CUSTOM          = 'Custom';
     public const FIELD_VADS_EXPIRATION_TIME = 'expirationTime';
     public const FIELD_VADS_ACC_VERIFY      = 'AccVerify';
+    // I for initial and R for recurrent
     public const FIELD_VADS_RTF             = 'RTF';
+    // no if you want disable 3Dsecure for recurrent payment
+    public const FIELD_VADS_VBV             = 'Vbv';
     public const FIELD_VADS_CH_DESC         = 'ChDesc';
 
     public const FIELD_LEN  = 'Len';
@@ -66,7 +71,9 @@ class Api
     public const FIELD_VADS_DESCRIPTION  = 'Description';
     public const FIELD_VADS_CODE         = 'Code';
     public const FIELD_VADS_PCNR         = 'PCNr';
+
     public const FIELD_VADS_CCNR         = 'CCNr';
+
     public const FIELD_VADS_CCCVC        = 'CCCVC';
     public const FIELD_VADS_CC_BRAND     = 'CCBrand';
     public const FIELD_VADS_CC_EXPIRY    = 'CCExpiry';
@@ -139,6 +146,13 @@ class Api
         self::FIELD_VADS_USER_DATA,
         self::FIELD_VADS_CAPTURE,
         self::FIELD_VADS_ORDER_DESC,
+
+        self::FIELD_VADS_PCNR,
+        self::FIELD_VADS_CCNR,
+        self::FIELD_VADS_CC_EXPIRY,
+        self::FIELD_VADS_CC_BRAND,
+        self::FIELD_VADS_VBV,
+        self::FIELD_VADS_RTF,
     ];
 
     private const REQUIRED_FIELDS = [
@@ -199,6 +213,10 @@ class Api
      */
     public function doPayment(array $details): void
     {
+        if (static::ENDPOINT_DIRECT === $this->getOption(static::ENDPOINT_TYPE, $details)) {
+            throw new HttpPostRedirect($this->getDirectPayment($details), $details);
+        }
+
         $this->parameters[static::FIELD_VADS_TRANS_ID]    = $this->getOption(static::FIELD_VADS_TRANS_ID, $details);
         $this->parameters[static::FIELD_VADS_AMOUNT]      = $this->getOption(static::FIELD_VADS_AMOUNT, $details);
         $this->parameters[static::FIELD_VADS_CURRENCY]    = $this->getOption(static::FIELD_VADS_CURRENCY, $details);
@@ -209,6 +227,12 @@ class Api
         $this->parameters[static::FIELD_VADS_URL_BACK]    = $this->getOption(static::FIELD_VADS_URL_BACK, $details);
         $this->parameters[static::FIELD_VADS_RESPONSE]    = $this->getOption(static::FIELD_VADS_RESPONSE, $details);
         $this->parameters[static::FIELD_VADS_LANGUAGE]    = $this->getOption(static::FIELD_VADS_LANGUAGE, $details);
+        $this->parameters[static::FIELD_VADS_ORDER_DESC]  = $this->getOption(static::FIELD_VADS_ORDER_DESC, $details);
+
+        if (null !== $rtf = $this->getOption(static::FIELD_VADS_RTF, $details)) {
+            $this->parameters[static::FIELD_VADS_RTF] = $rtf;
+        }
+
         $this->parameters[static::FIELD_VADS_ORDER_DESC]  = $this->getOption(static::FIELD_VADS_ORDER_DESC, $details);
         $this->validate();
 
@@ -225,6 +249,25 @@ class Api
         $url = sprintf('%s?MerchantID=%s&Len=%d&Data=%s&URLBack=%s&%s', static::ENDPOINT_PAYSSL, $this->parameters[static::FIELD_VADS_MERCHANT_ID], $len, $data, $this->parameters[static::FIELD_VADS_URL_BACK], http_build_query($customFields));
 
         throw new HttpPostRedirect($url, $details);
+    }
+
+    public function getDirectPayment(array $details): string
+    {
+        $this->parameters[static::FIELD_VADS_TRANS_ID] = $this->getOption(static::FIELD_VADS_TRANS_ID, $details);
+        $this->parameters[static::FIELD_VADS_AMOUNT]   = $this->getOption(static::FIELD_VADS_AMOUNT, $details);
+        $this->parameters[static::FIELD_VADS_CURRENCY] = $this->getOption(static::FIELD_VADS_CURRENCY, $details);
+
+        $this->parameters[static::FIELD_VADS_PCNR]      = $this->getOption(static::FIELD_VADS_PCNR, $details);
+        $this->parameters[static::FIELD_VADS_CCNR]      = $this->getOption(static::FIELD_VADS_PCNR, $details);
+        $this->parameters[static::FIELD_VADS_RTF]       = $this->getOption(static::FIELD_VADS_RTF, $details);
+        $this->parameters[static::FIELD_VADS_VBV]       = 'no';
+        $this->parameters[static::FIELD_VADS_CC_BRAND]  = $this->getOption(static::FIELD_VADS_CC_BRAND, $details);
+        $this->parameters[static::FIELD_VADS_CC_EXPIRY] = $this->getOption(static::FIELD_VADS_CC_EXPIRY, $details);
+
+        $data = $this->getBfishCrypt(static::ENDPOINT_DIRECT);
+        $len  = $this->getOption(static::FIELD_LEN, $this->parameters);
+
+        return sprintf('%s?MerchantID=%s&Len=%d&Data=%s', static::ENDPOINT_DIRECT, $this->parameters[static::FIELD_VADS_MERCHANT_ID], $len, $data);
     }
 
     /**
@@ -265,9 +308,12 @@ class Api
         return $this->shaCompose(static::REQUEST_HMAC_FIELDS);
     }
 
-    public function getBfishCrypt(): string
+    public function getBfishCrypt(?string $type = null): string
     {
-        $this->validate();
+        // TODO : better validation
+        if (static::ENDPOINT_DIRECT !== $type) {
+            $this->validate();
+        }
 
         return $this->bfishCompose(static::BLOWFISH_FIELDS);
     }
@@ -358,7 +404,7 @@ class Api
             }
         } else {
             $parameters[self::FIELD_DATA]         = $httpRequest[self::FIELD_DATA];
-            $this->dataString                     = $this->decrypt((string) hex2bin($parameters[self::FIELD_DATA]), $this->cryptKey);
+            $this->dataString                     = static::decrypt((string) hex2bin($parameters[self::FIELD_DATA]), $this->cryptKey);
             $parameters[self::FIELD_VADS_DEBUG]   = $this->dataString;
             $dataParams                           = explode('&', $this->dataString);
             foreach ($dataParams as $dataParamString) {
@@ -387,7 +433,7 @@ class Api
         return (string) $val;
     }
 
-    private function decrypt(string $data, string $key): string
+    public static function decrypt(string $data, string $key): string
     {
         $l = strlen($key);
         if ($l < 16) {

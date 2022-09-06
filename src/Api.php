@@ -18,6 +18,8 @@ class Api
     public const ENDPOINT_CAPTURE  = 'https://paymentpage.axepta.bnpparibas/capture.aspx';
     public const ENDPOINT_CREDIT   = 'https://paymentpage.axepta.bnpparibas/credit.aspx';
 
+    public const MSG_VER_DEFAULT = '2.0';
+
     public const STATUS_OK         = 'OK';
     public const STATUS_AUTHORISED = 'AUTHORIZED';
     public const STATUS_FAILED     = 'FAILED';
@@ -44,16 +46,17 @@ class Api
     public const FIELD_VADS_USER_DATA       = 'UserData';
     public const FIELD_VADS_CAPTURE         = 'Capture';
     public const FIELD_VADS_ORDER_DESC      = 'OrderDesc';
+    public const FIELD_MSG_VER              = 'MsgVer';
     public const FIELD_VADS_REQ_ID          = 'ReqID';
     public const FIELD_VADS_PLAIN           = 'Plain';
     public const FIELD_VADS_CUSTOM          = 'Custom';
     public const FIELD_VADS_EXPIRATION_TIME = 'expirationTime';
     public const FIELD_VADS_ACC_VERIFY      = 'AccVerify';
     // I for initial and R for recurrent
-    public const FIELD_VADS_RTF             = 'RTF';
+    public const FIELD_VADS_RTF = 'RTF';
     // no if you want disable 3Dsecure for recurrent payment
-    public const FIELD_VADS_VBV             = 'Vbv';
-    public const FIELD_VADS_CH_DESC         = 'ChDesc';
+    public const FIELD_VADS_VBV     = 'Vbv';
+    public const FIELD_VADS_CH_DESC = 'ChDesc';
 
     public const FIELD_LEN  = 'Len';
     public const FIELD_DATA = 'Data';
@@ -72,21 +75,21 @@ class Api
     public const FIELD_VADS_CODE         = 'Code';
     public const FIELD_VADS_PCNR         = 'PCNr';
 
-    public const FIELD_VADS_CCNR         = 'CCNr';
+    public const FIELD_VADS_CCNR = 'CCNr';
 
-    public const FIELD_VADS_CCCVC        = 'CCCVC';
-    public const FIELD_VADS_CC_BRAND     = 'CCBrand';
-    public const FIELD_VADS_CC_EXPIRY    = 'CCExpiry';
-    public const FIELD_VADS_TERM_URL     = 'TermURL';
-    public const FIELD_VADS_USER_AGENT   = 'UserAgent';
-    public const FIELD_VADS_HTTP_ACCEPT  = 'HTTPAccept';
-    public const FIELD_VADS_ABO_ID       = 'AboID';
-    public const FIELD_VADS_ACSXID       = 'ACSXID';
-    public const FIELD_VADS_MASKED_PAN   = 'MaskedPan';
-    public const FIELD_VADS_CAVV         = 'CAVV';
-    public const FIELD_VADS_ECI          = 'ECI';
-    public const FIELD_VADS_DDD          = 'DDD';
-    public const FIELD_VADS_TYPE         = 'Type';
+    public const FIELD_VADS_CCCVC       = 'CCCVC';
+    public const FIELD_VADS_CC_BRAND    = 'CCBrand';
+    public const FIELD_VADS_CC_EXPIRY   = 'CCExpiry';
+    public const FIELD_VADS_TERM_URL    = 'TermURL';
+    public const FIELD_VADS_USER_AGENT  = 'UserAgent';
+    public const FIELD_VADS_HTTP_ACCEPT = 'HTTPAccept';
+    public const FIELD_VADS_ABO_ID      = 'AboID';
+    public const FIELD_VADS_ACSXID      = 'ACSXID';
+    public const FIELD_VADS_MASKED_PAN  = 'MaskedPan';
+    public const FIELD_VADS_CAVV        = 'CAVV';
+    public const FIELD_VADS_ECI         = 'ECI';
+    public const FIELD_VADS_DDD         = 'DDD';
+    public const FIELD_VADS_TYPE        = 'Type';
 
     // @see https://docs.axepta.bnpparibas/display/DOCBNP/Payment+page section "How to customize the payment page?"
     // Amount and Currency
@@ -146,6 +149,7 @@ class Api
         self::FIELD_VADS_USER_DATA,
         self::FIELD_VADS_CAPTURE,
         self::FIELD_VADS_ORDER_DESC,
+        self::FIELD_MSG_VER,
 
         self::FIELD_VADS_PCNR,
         self::FIELD_VADS_CCNR,
@@ -228,12 +232,13 @@ class Api
         $this->parameters[static::FIELD_VADS_RESPONSE]    = $this->getOption(static::FIELD_VADS_RESPONSE, $details);
         $this->parameters[static::FIELD_VADS_LANGUAGE]    = $this->getOption(static::FIELD_VADS_LANGUAGE, $details);
         $this->parameters[static::FIELD_VADS_ORDER_DESC]  = $this->getOption(static::FIELD_VADS_ORDER_DESC, $details);
+        $this->parameters[static::FIELD_MSG_VER]          = $this->getOption(static::FIELD_MSG_VER, $details) ?? static::MSG_VER_DEFAULT;
 
         if (null !== $rtf = $this->getOption(static::FIELD_VADS_RTF, $details)) {
             $this->parameters[static::FIELD_VADS_RTF] = $rtf;
         }
 
-        $this->parameters[static::FIELD_VADS_ORDER_DESC]  = $this->getOption(static::FIELD_VADS_ORDER_DESC, $details);
+        $this->parameters[static::FIELD_VADS_ORDER_DESC] = $this->getOption(static::FIELD_VADS_ORDER_DESC, $details);
         $this->validate();
 
         $data = $this->getBfishCrypt();
@@ -263,6 +268,7 @@ class Api
         $this->parameters[static::FIELD_VADS_VBV]       = 'no';
         $this->parameters[static::FIELD_VADS_CC_BRAND]  = $this->getOption(static::FIELD_VADS_CC_BRAND, $details);
         $this->parameters[static::FIELD_VADS_CC_EXPIRY] = $this->getOption(static::FIELD_VADS_CC_EXPIRY, $details);
+        $this->parameters[static::FIELD_MSG_VER]        = $this->getOption(static::FIELD_MSG_VER, $details) ?? static::MSG_VER_DEFAULT;
 
         $data = $this->getBfishCrypt(static::ENDPOINT_DIRECT);
         $len  = $this->getOption(static::FIELD_LEN, $this->parameters);
@@ -403,10 +409,10 @@ class Api
                 $parameters[$key] = $value;
             }
         } else {
-            $parameters[self::FIELD_DATA]         = $httpRequest[self::FIELD_DATA];
-            $this->dataString                     = static::decrypt((string) hex2bin($parameters[self::FIELD_DATA]), $this->cryptKey);
-            $parameters[self::FIELD_VADS_DEBUG]   = $this->dataString;
-            $dataParams                           = explode('&', $this->dataString);
+            $parameters[self::FIELD_DATA]       = $httpRequest[self::FIELD_DATA];
+            $this->dataString                   = static::decrypt((string) hex2bin($parameters[self::FIELD_DATA]), $this->cryptKey);
+            $parameters[self::FIELD_VADS_DEBUG] = $this->dataString;
+            $dataParams                         = explode('&', $this->dataString);
             foreach ($dataParams as $dataParamString) {
                 $dataKeyValue     = explode('=', $dataParamString, 2);
                 $key              = ('mid' == $dataKeyValue[0]) ? self::FIELD_VADS_MERCHANT_ID : $dataKeyValue[0];

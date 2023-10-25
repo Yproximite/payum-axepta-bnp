@@ -7,6 +7,7 @@ namespace Yproximite\Payum\Axepta;
 use Http\Message\MessageFactory;
 use Payum\Core\HttpClientInterface;
 use Payum\Core\Reply\HttpPostRedirect;
+use phpseclib3\Crypt\Blowfish;
 
 class Api
 {
@@ -434,6 +435,13 @@ class Api
             $data .= str_repeat("\x00", 8 - $m);
         }
 
+        if (!in_array('bf-ecb', openssl_get_cipher_methods(), true)) {
+            $blowfish = new Blowfish('ecb');
+            $blowfish->setKey($key);
+
+            return $blowfish->encrypt($data);
+        }
+
         $val = openssl_encrypt($data, 'BF-ECB', $key, OPENSSL_RAW_DATA | OPENSSL_NO_PADDING);
 
         return (string) $val;
@@ -444,6 +452,14 @@ class Api
         $l = strlen($key);
         if ($l < 16) {
             $key = str_repeat($key, (int) ceil(16 / $l));
+        }
+
+        if (!in_array('bf-ecb', openssl_get_cipher_methods(), true)) {
+            $blowfish = new Blowfish('ecb');
+            $blowfish->setKey($key);
+            $blowfish->disablePadding();
+
+            return $blowfish->decrypt($data);
         }
 
         $val = openssl_decrypt($data, 'BF-ECB', $key, OPENSSL_RAW_DATA | OPENSSL_NO_PADDING);

@@ -48,7 +48,7 @@ class Api
     public const FIELD_VADS_CAPTURE         = 'Capture';
     public const FIELD_VADS_ORDER_DESC      = 'OrderDesc';
     public const FIELD_MSG_VER              = 'MsgVer';
-    public const FIELD_VADS_REQ_ID          = 'ReqID';
+    public const FIELD_VADS_REQ_ID          = 'ReqId';
     public const FIELD_VADS_PLAIN           = 'Plain';
     public const FIELD_VADS_CUSTOM          = 'Custom';
     public const FIELD_VADS_EXPIRATION_TIME = 'expirationTime';
@@ -158,6 +158,7 @@ class Api
         self::FIELD_VADS_CC_BRAND,
         self::FIELD_VADS_VBV,
         self::FIELD_VADS_RTF,
+        self::FIELD_VADS_REQ_ID,
     ];
 
     private const REQUIRED_FIELDS = [
@@ -237,6 +238,10 @@ class Api
 
         if (null !== $rtf = $this->getOption(static::FIELD_VADS_RTF, $details)) {
             $this->parameters[static::FIELD_VADS_RTF] = $rtf;
+        }
+
+        if (null !== $reqId = $this->getOption(static::FIELD_VADS_REQ_ID, $details)) {
+            $this->parameters[static::FIELD_VADS_REQ_ID] = $reqId;
         }
 
         $this->parameters[static::FIELD_VADS_ORDER_DESC] = $this->getOption(static::FIELD_VADS_ORDER_DESC, $details);

@@ -3,11 +3,11 @@
 > A Payum gateway to use [Axepta](https://docs.axepta.bnpparibas/display/DOCBNP/Documentation+Axepta+BNP+Paribas+-++Home) (a French payment system)
 
 [![Latest Stable Version](https://poser.pugx.org/yproximite/payum-axepta-bnp/version)](https://packagist.org/packages/yproximite/payum-axepta-bnp)
-[![Build Status](https://travis-ci.com/Yproximite/payum-axepta-bnp.svg?token=pNBs2oaRpfxdyhqWf28h&branch=master)](https://travis-ci.com/Yproximite/payum-axepta-bnp)
+[![CI](https://github.com/Yproximite/payum-axepta-bnp/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Yproximite/payum-axepta-bnp/actions/workflows/ci.yml)
 
 ## Requirements
 
-- PHP 7.4+
+- PHP 8.1+
 - [Payum](https://github.com/Payum/Payum)
 - Optionally [PayumBundle](https://github.com/Payum/PayumBundle) and Symfony 3 or 4+
 

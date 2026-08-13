@@ -15,8 +15,6 @@ use Yproximite\Payum\Axepta\Request\RequestStatusApplier;
 class AxeptaGatewayFactory extends GatewayFactory
 {
     /**
-     * {@inheritdoc}
-     *
      * @param ArrayObject<mixed> $config
      */
     protected function populateConfig(ArrayObject $config): void
@@ -49,7 +47,7 @@ class AxeptaGatewayFactory extends GatewayFactory
             $config['payum.api'] = function (ArrayObject $config): Api {
                 $config->validateNotEmpty($config['payum.required_options']);
 
-                return new Api((array) $config, $config['payum.http_client'], $config['httplug.message_factory']);
+                return new Api((array) $config, $config['payum.http_client']);
             };
         }
     }

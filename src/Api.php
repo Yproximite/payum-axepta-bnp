@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yproximite\Payum\Axepta;
 
-use Http\Message\MessageFactory;
 use Payum\Core\HttpClientInterface;
 use Payum\Core\Reply\HttpPostRedirect;
 use phpseclib3\Crypt\Blowfish;
@@ -192,26 +191,29 @@ class Api
     ];
 
     /** @var array<string, mixed> */
-    private array               $options = [];
+    private array $options = [];
     private HttpClientInterface $client;
-    private MessageFactory      $messageFactory;
-    private string              $secretKey;
-    private string              $cryptKey;
+    private string $secretKey;
+    private string $cryptKey;
     /** @var array<string, mixed> */
-    private array   $parameters = [];
+    private array $parameters   = [];
     private ?string $dataString = null;
 
     /**
      * @param array<string, mixed> $options
+     * @param mixed                $messageFactory unused, kept for backward compatibility. The former
+     *                                             Http\Message\MessageFactory was never used by this
+     *                                             class and no longer exists: php-http/message 1.16
+     *                                             dropped php-http/message-factory, deprecated in
+     *                                             favour of psr/http-factory.
      */
-    public function __construct(array $options, HttpClientInterface $client, MessageFactory $messageFactory)
+    public function __construct(array $options, HttpClientInterface $client, $messageFactory = null)
     {
         $this->options                                    = $options;
         $this->secretKey                                  = $options[static::OPTIONS_HMAC];
         $this->cryptKey                                   = $options[static::OPTIONS_CRYPT_KEY];
         $this->parameters[static::FIELD_VADS_MERCHANT_ID] = $options[static::OPTIONS_MERCHANT_ID];
         $this->client                                     = $client;
-        $this->messageFactory                             = $messageFactory;
     }
 
     /**
@@ -384,8 +386,6 @@ class Api
 
     /**
      * @param array<string, mixed> $details
-     *
-     * @return mixed
      */
     protected function getOption(string $name, array $details = [])
     {

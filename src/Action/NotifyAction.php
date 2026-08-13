@@ -18,9 +18,6 @@ class NotifyAction extends BaseApiAwareAction implements ActionInterface, Gatewa
 {
     use GatewayAwareTrait;
 
-    /**
-     * {@inheritdoc}
-     */
     public function execute($request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
@@ -33,13 +30,10 @@ class NotifyAction extends BaseApiAwareAction implements ActionInterface, Gatewa
         throw new HttpResponse('OK', 200);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function supports($request)
     {
         return
-            $request instanceof Notify &&
-            $request->getModel() instanceof \ArrayAccess;
+            $request instanceof Notify
+            && $request->getModel() instanceof \ArrayAccess;
     }
 }

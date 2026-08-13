@@ -21,9 +21,6 @@ class CaptureAction extends BaseApiAwareAction implements ActionInterface, Gatew
     use GatewayAwareTrait;
     use GenericTokenFactoryAwareTrait;
 
-    /**
-     * {@inheritdoc}
-     */
     public function execute($request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
@@ -34,14 +31,11 @@ class CaptureAction extends BaseApiAwareAction implements ActionInterface, Gatew
         $this->api->doPayment((array) $details);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function supports($request)
     {
         return
-            $request instanceof Capture &&
-            $request->getModel() instanceof \ArrayAccess;
+            $request instanceof Capture
+            && $request->getModel() instanceof \ArrayAccess;
     }
 
     /**

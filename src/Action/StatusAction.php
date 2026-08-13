@@ -21,9 +21,6 @@ class StatusAction implements ActionInterface
         $this->requestStatusApplier = $requestStatusApplier;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function execute($request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
@@ -33,13 +30,10 @@ class StatusAction implements ActionInterface
         $this->requestStatusApplier->apply($model[Api::FIELD_VADS_TRANS_STATUS], $request);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function supports($request): bool
     {
         return
-            $request instanceof GetStatusInterface &&
-            $request->getModel() instanceof \ArrayAccess;
+            $request instanceof GetStatusInterface
+            && $request->getModel() instanceof \ArrayAccess;
     }
 }
